@@ -1,0 +1,77 @@
+// Number Guessing Game in C++
+// The program picks a random number and the user keeps guessing
+// until they find it, getting "too high" / "too low" hints.
+ 
+#include <iostream>
+#include <random>
+#include <limits>
+#include <cstdlib>
+ 
+using namespace std;
+ 
+// Reads a valid integer from the user (handles non-numeric input)
+int readInt(const string &prompt) {
+    int value;
+    while (true) {
+        cout << prompt;
+        if (cin >> value) {
+            return value;
+        }
+        if (cin.eof()) {                                     // input stream closed
+            cout << "\nNo more input. Exiting.\n";
+            exit(0);
+        }
+        cout << "Invalid input! Please enter a whole number.\n";
+        cin.clear();                                         // reset error state
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard bad input
+    }
+}
+ 
+void playGame(int minNum, int maxNum) {
+    // Modern C++ random number generation
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> dist(minNum, maxNum);
+ 
+    int secret = dist(gen);
+    int guess = 0;
+    int attempts = 0;
+ 
+    cout << "\nI'm thinking of a number between " << minNum
+         << " and " << maxNum << ". Can you guess it?\n\n";
+ 
+    while (guess != secret) {
+        guess = readInt("Enter your guess: ");
+        attempts++;
+ 
+        if (guess < secret) {
+            cout << "Too low! Try again.\n";
+        } else if (guess > secret) {
+            cout << "Too high! Try again.\n";
+        } else {
+            cout << "\nCongratulations! You guessed the number "
+                 << secret << " in " << attempts << " attempt(s).\n";
+        }
+    }
+}
+ 
+int main() {
+    const int MIN_NUM = 1;
+    const int MAX_NUM = 100;
+    char again;
+ 
+    cout << "=====================================\n";
+    cout << "      WELCOME TO THE GUESSING GAME   \n";
+    cout << "=====================================\n";
+ 
+    do {
+        playGame(MIN_NUM, MAX_NUM);
+ 
+        cout << "\nDo you want to play again? (y/n): ";
+        cin >> again;
+    } while (again == 'y' || again == 'Y');
+ 
+    cout << "\nThanks for playing. Goodbye!\n";
+    return 0;
+}
+ 
